@@ -76,55 +76,23 @@ const Cronometro = () => {
                     className="max-w-[100px] sm:max-w-[150px] md:max-w-[200px] h-auto"
                 />
             </div>
-            <div className="relative z-10 flex flex-col items-center text-black uppercase w-full max-w-3xl">
-                <h1 className="text-green-600 text-3xl sm:text-5xl md:text-7xl font-bold mb-6 text-center">
-                    Días sin accidentes
-                </h1>            
 
-                <div className="rounded-lg p-4 sm:p-6 mb-4 text-center w-full">
-                    <span className="text-6xl sm:text-7xl md:text-[130px] font-extrabold tracking-wider text-black">
+            <div className="relative z-10 flex flex-col items-center text-black uppercase w-full max-w-6xl">
+                <h1 className="text-green-600 text-4xl sm:text-6xl md:text-7xl font-bold mb-8 text-center">
+                    Días sin accidentes
+                </h1>
+                <div className="rounded-lg p-4 sm:p-6 mb-10 text-center w-full mx-auto">
+                    <span 
+                        className="text-[300px] sm:text-[400px] md:text-[500px] lg:text-[600px] font-extrabold tracking-tight text-black whitespace-nowrap leading-none"
+                        style={{ fontFamily: "'Roboto', sans-serif" }}
+                    >
                         { days }
                     </span>
-                    <p className="text-xl sm:text-2xl md:text-3xl mt-2 text-green-600">días</p>
                 </div>
 
-                <div className="rounded-lg p-4 sm:p-6 mb-6 text-center w-full">
-                    <div className="text-6xl sm:text-7xl md:text-[140px] font-mono text-black tracking-wider">
-                        { formattedTime }
-                    </div>
-                </div>
-
-                <div className="flex flex-wrap justify-center gap-4 sm:gap-8 mb-6">
-                    {!isRunning ? (
-                        <button
-                            onClick={ handleStart }
-                            className="px-8 py-4 bg-green-500 hover:bg-green-600 text-white 
-                                text-xl font-bold rounded-xl transition-all duration-300 transform hover:scale-105
-                                hover:cursor-pointer"
-                        >
-                            Iniciar
-                        </button>
-                    ) : (
-                        <button
-                            onClick={ handlePause }
-                            className="px-8 py-4 bg-red-500 hover:bg-red-600 text-white 
-                                text-xl font-bold rounded-xl transition-all duration-300 transform hover:scale-105
-                                hover:cursor-pointer"
-                        >
-                            Pausar
-                        </button>
-                    )}
-                    <button
-                        onClick={ handleReset }
-                        className="px-8 py-4 bg-gray-500 hover:bg-gray-600 text-white 
-                            text-xl font-bold rounded-xl transition-all duration-300 transform hover:scale-105
-                            hover:cursor-pointer"
-                    >
-                        Reiniciar
-                    </button>                   
-                </div>
-                <div className="w-full max-w-md">
-                        <label htmlFor="startDate" className="block text-base sm:text-lg mb-2 text-gray-700 text-center">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-6 px-4 sm:px-0">
+                    <div className="flex flex-col items-start gap-4 w-full sm:w-auto">
+                        <label htmlFor="startDate" className="block text-base sm:text-lg mb-2 text-gray-700">
                             Selecciona una fecha de inicio:
                         </label>
                         <input
@@ -132,9 +100,44 @@ const Cronometro = () => {
                             type="date"
                             value={ selectedDate }
                             onChange={ handleDateChange }
-                            className="border border-gray-300 rounded-md p-2 w-full text-black text-center"
+                            className="border border-gray-300 rounded-md p-2 w-full sm:w-auto text-black text-center"
                         />
+
+                        <div className="flex flex-wrap gap-4 mt-2">
+                        {!isRunning ? (
+                            <button
+                                onClick={ handleStart }
+                                className="px-4 py-2 bg-green-500 hover:bg-green-600 
+                                text-white text-lg font-bold rounded-xl transition-all 
+                                duration-300 hover:scale-105 hover:cursor-pointer"
+                            >
+                            Iniciar
+                            </button>
+                        ) : (
+                            <button
+                                onClick={ handlePause }
+                                className="px-4 py-2 bg-red-500 hover:bg-red-600 
+                                text-white text-lg font-bold rounded-xl transition-all 
+                                duration-300 hover:scale-105 hover:cursor-pointer"
+                            >
+                            Pausar
+                            </button>
+                        )}
+                        <button
+                            onClick={ handleReset }
+                            className="px-4 py-2 bg-gray-500 hover:bg-gray-600 
+                            text-white text-lg font-bold rounded-xl transition-all 
+                            duration-300 hover:scale-105 hover:cursor-pointer"
+                        >
+                            Reiniciar
+                        </button>
                     </div>
+                </div>
+                    {/* Temporizador (lado derecho) */}
+                    <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-mono text-black tracking-tight self-end sm:self-auto">
+                        {formattedTime}
+                    </div>
+                </div>
             </div>
         </div>
     )
