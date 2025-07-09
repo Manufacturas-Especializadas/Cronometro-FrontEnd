@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import Logo from "../../assets/logomesa.png";
+import { useNavigate } from "react-router-dom";
 
 const Cronometro = () => {
     const[startTime, setStarTime] = useState(null);
     const[elapsed, setElapsed] = useState(0);
     const[isRunning, setIsRunnig] = useState(false);
     const[selectedDate, setSelectedDate] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         let interval = null;
@@ -65,6 +67,10 @@ const Cronometro = () => {
 
     const handleDateChange = (e) => {
         setSelectedDate(e.target.value);
+    };
+
+    const handleNavigate = (path) => {
+        navigate(path);
     };
 
     return (
@@ -130,6 +136,14 @@ const Cronometro = () => {
                             duration-300 hover:scale-105 hover:cursor-pointer"
                         >
                             Reiniciar
+                        </button>
+                        <button
+                            onClick={() => handleNavigate("/cronometro-por-lineas")}
+                            className="px-4 py-2 bg-blue-500 hover:bg-blue-600
+                            text-white text-lg font-bold rounded-xl transition-all
+                            duration-300 hover:scale-105 hover:cursor-pointer"
+                        >
+                            Cronometro por lineas
                         </button>
                     </div>
                 </div>
