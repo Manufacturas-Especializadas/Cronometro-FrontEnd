@@ -3,11 +3,20 @@ import Logo from "../../assets/logomesa.png";
 import { useNavigate } from "react-router-dom";
 
 const Cronometro = () => {
-    const[startTime, setStarTime] = useState(null);
-    const[elapsed, setElapsed] = useState(0);
-    const[isRunning, setIsRunnig] = useState(false);
-    const[selectedDate, setSelectedDate] = useState("");
     const navigate = useNavigate();
+    
+    const [state, setState] = useState(() => {
+        const savedState = localStorage.getItem('cronometroPrincipal');
+        return savedState 
+            ? JSON.parse(savedState)
+            : { startTime: null, elapsed: 0, isRunning: false, selectedDate: "" };
+    });
+
+    const { startTime, elapsed, isRunning, selectedDate } = state;
+
+    useEffect(() => {
+        localStorage.setItem('cronometroPrincipal', JSON.stringify(state));
+    }, [state]);
 
     useEffect(() => {
         let interval = null;
@@ -15,8 +24,8 @@ const Cronometro = () => {
         if (isRunning) {
             interval = setInterval(() => {
                 const now = new Date();
-                const diffSinceStart = Math.floor((now - startTime) / 10);
-                setElapsed(diffSinceStart);
+                const diffSinceStart = Math.floor((now - new Date(startTime)) / 10);
+                setState(prev => ({ ...prev, elapsed: diffSinceStart }));
             }, 10);
         }
     
@@ -26,7 +35,7 @@ const Cronometro = () => {
     const getTimeData = () => {
         const totalSeconds = Math.floor(elapsed / 100);
         const days = Math.floor(totalSeconds / (24 * 60 * 60));
-        const hours = Math.floor((totalSeconds / (60 * 60) % 24));
+        const hours = Math.floor((totalSeconds / (60 * 60)) % 24);
         const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
         const seconds = totalSeconds % 60;
 
@@ -39,39 +48,47 @@ const Cronometro = () => {
     };
 
     const { days, hours, minutes, seconds } = getTimeData();
-
     const formattedTime = `${hours}:${minutes}:${seconds}`;
 
+    // Manejadores de eventos
     const handleStart = () => {
         let startDate;
 
         if(selectedDate){
             startDate = new Date(selectedDate);
-        } else{
+        } else {
             startDate = new Date();
         }
 
-        setStarTime(startDate);
-        setIsRunnig(true);
+        setState({
+            ...state,
+            startTime: startDate.toISOString(),
+            isRunning: true,
+            elapsed: 0
+        });
     };
 
     const handlePause = () => {
-        setIsRunnig(false);
+        setState(prev => ({ ...prev, isRunning: false }));
     };
 
     const handleReset = () => {
-        setElapsed(0);
-        setIsRunnig(false);
-        setStarTime(null);
+        setState({
+            startTime: null,
+            elapsed: 0,
+            isRunning: false,
+            selectedDate: ""
+        });
     };
 
     const handleDateChange = (e) => {
-        setSelectedDate(e.target.value);
+        setState(prev => ({ ...prev, selectedDate: e.target.value }));
     };
 
     const handleNavigate = (path) => {
         navigate(path);
     };
+
 
     return (
         <div className="min-h-screen w-full relative flex items-center justify-center bg-white px-4 py-8">
