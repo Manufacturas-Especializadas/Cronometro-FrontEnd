@@ -2,99 +2,141 @@ import { useState, useEffect } from "react";
 import Logo from "../../assets/logomesa.png";
 
 const CronometrosLineas = () => {
-    const [lineas, setLineas] = useState([
-        { id: 1, nombre: "Línea 1", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 2, nombre: "Línea 2", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 3, nombre: "Línea 3", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 4, nombre: "Línea 4", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 5, nombre: "Línea 5", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 6, nombre: "Línea 6", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 7, nombre: "Línea 7", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 8, nombre: "Línea 8", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 9, nombre: "Línea 9", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 10, nombre: "Línea 10", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 11, nombre: "Línea 11", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 12, nombre: "Línea 12", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 14, nombre: "Línea 14", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 15, nombre: "Línea 15", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 17, nombre: "Línea 17", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 18, nombre: "Línea 18", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 19, nombre: "Mantenimiento", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 20, nombre: "Embarques", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 21, nombre: "Almacén", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 22, nombre: "SG", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-        { id: 23, nombre: "Calidad", startTime: null, elapsed: 0, isRunning: false, selectedDate: "" },
-    ]);
-
-    const updateLinea = (id, updatedProps) => {
-        setLineas(prevLineas => 
-            prevLineas.map(linea => 
-                linea.id === id ? { ...linea, ...updatedProps } : linea
-            )
-        );
-    };
-
-    useEffect(() => {
-        const intervals = lineas
-            .filter(linea => linea.isRunning)
-            .map(linea => {
-                return setInterval(() => {
-                    const now = new Date();
-                    const diffSinceStart = Math.floor((now - linea.startTime) / 10);
-                    updateLinea(linea.id, { elapsed: diffSinceStart });
-                }, 10);
-            });
-
-        return () => intervals.forEach(interval => clearInterval(interval));
-    }, [lineas]);
-
-    const getTimeData = (elapsed) => {
-        const totalSeconds = Math.floor(elapsed / 100);
-        const days = Math.floor(totalSeconds / (24 * 60 * 60));
-        const hours = Math.floor((totalSeconds / (60 * 60)) % 24);
-        const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
-        const seconds = totalSeconds % 60;
-
-        return {
-            days,
-            hours: String(hours).padStart(2, '0'),
-            minutes: String(minutes).padStart(2, '0'),
-            seconds: String(seconds).padStart(2, '0')
+        const initialLineas = [
+            { id: 1, nombre: "Línea 1" },
+            { id: 2, nombre: "Línea 2" },
+            { id: 3, nombre: "Línea 3" },
+            { id: 4, nombre: "Línea 4" },
+            { id: 5, nombre: "Línea 5" },
+            { id: 6, nombre: "Línea 6" },
+            { id: 7, nombre: "Línea 7" },
+            { id: 8, nombre: "Línea 8" },
+            { id: 9, nombre: "Línea 9" },
+            { id: 10, nombre: "Línea 10" },
+            { id: 11, nombre: "Línea 11" },
+            { id: 12, nombre: "Línea 12" },
+            { id: 14, nombre: "Línea 14" },
+            { id: 15, nombre: "Línea 15" },
+            { id: 17, nombre: "Línea 17" },
+            { id: 18, nombre: "Línea 18" },
+            { id: 19, nombre: "Mantenimiento" },
+            { id: 20, nombre: "Embarques" },
+            { id: 21, nombre: "Almacén" },
+            { id: 22, nombre: "SG" },
+            { id: 23, nombre: "Calidad" },
+        ].map(linea => {
+            const savedData = localStorage.getItem(`cronometro-${linea.id}`);
+            return savedData 
+                ? { ...linea, ...JSON.parse(savedData) } 
+                : { ...linea, startTime: null, elapsed: 0, isRunning: false, selectedDate: "" };
+        });
+    
+        const [lineas, setLineas] = useState(initialLineas);
+    
+        const saveToLocalStorage = (id, data) => {
+            localStorage.setItem(`cronometro-${id}`, JSON.stringify(data));
         };
-    };
-
-    const handleStart = (id) => {
-        const linea = lineas.find(l => l.id === id);
-        let startDate;
-
-        if (linea.selectedDate) {
-            startDate = new Date(linea.selectedDate);
-        } else {
-            startDate = new Date();
-        }
-
-        updateLinea(id, {
-            startTime: startDate,
-            isRunning: true
-        });
-    };
-
-    const handlePause = (id) => {
-        updateLinea(id, { isRunning: false });
-    };
-
-    const handleReset = (id) => {
-        updateLinea(id, {
-            elapsed: 0,
-            isRunning: false,
-            startTime: null,
-            selectedDate: ""
-        });
-    };
-
-    const handleDateChange = (id, date) => {
-        updateLinea(id, { selectedDate: date });
-    };
+    
+        const updateLinea = (id, updatedProps) => {
+            setLineas(prevLineas => {
+                const updatedLineas = prevLineas.map(linea => 
+                    linea.id === id ? { ...linea, ...updatedProps } : linea
+                );
+                
+                const lineaToSave = updatedLineas.find(l => l.id === id);
+                if (lineaToSave) {
+                    const { startTime, elapsed, isRunning, selectedDate } = lineaToSave;
+                    saveToLocalStorage(id, { startTime, elapsed, isRunning, selectedDate });
+                }
+                
+                return updatedLineas;
+            });
+        };
+    
+        useEffect(() => {
+            const intervals = lineas
+                .filter(linea => linea.isRunning)
+                .map(linea => {
+                    return setInterval(() => {
+                        const now = new Date();
+                        const diffSinceStart = Math.floor((now - new Date(linea.startTime)) / 10);
+                        updateLinea(linea.id, { elapsed: diffSinceStart });
+                    }, 10);
+                });
+    
+            return () => intervals.forEach(interval => clearInterval(interval));
+        }, [lineas]);
+    
+        useEffect(() => {
+            const loadedLineas = lineas.map(linea => {
+                const savedData = localStorage.getItem(`cronometro-${linea.id}`);
+                if (savedData) {
+                    const parsedData = JSON.parse(savedData);
+                    
+                    // Si estaba corriendo, ajustamos el tiempo transcurrido
+                    if (parsedData.isRunning && parsedData.startTime) {
+                        const now = new Date();
+                        const startTime = new Date(parsedData.startTime);
+                        parsedData.elapsed = Math.floor((now - startTime) / 10);
+                    }
+                    
+                    return { ...linea, ...parsedData };
+                }
+                return linea;
+            });
+            
+            setLineas(loadedLineas);
+        }, []);
+    
+        const getTimeData = (elapsed) => {
+            const totalSeconds = Math.floor(elapsed / 100);
+            const days = Math.floor(totalSeconds / (24 * 60 * 60));
+            const hours = Math.floor((totalSeconds / (60 * 60)) % 24);
+            const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
+            const seconds = totalSeconds % 60;
+    
+            return {
+                days,
+                hours: String(hours).padStart(2, '0'),
+                minutes: String(minutes).padStart(2, '0'),
+                seconds: String(seconds).padStart(2, '0')
+            };
+        };
+    
+        // Manejadores de eventos
+        const handleStart = (id) => {
+            const linea = lineas.find(l => l.id === id);
+            let startDate;
+    
+            if (linea.selectedDate) {
+                startDate = new Date(linea.selectedDate);
+            } else {
+                startDate = new Date();
+            }
+    
+            updateLinea(id, {
+                startTime: startDate.toISOString(),
+                isRunning: true,
+                elapsed: 0
+            });
+        };
+    
+        const handlePause = (id) => {
+            updateLinea(id, { isRunning: false });
+        };
+    
+        const handleReset = (id) => {
+            updateLinea(id, {
+                elapsed: 0,
+                isRunning: false,
+                startTime: null,
+                selectedDate: ""
+            });
+        };
+    
+        const handleDateChange = (id, date) => {
+            updateLinea(id, { selectedDate: date });
+        };
 
     return (
         <div className="min-h-screen w-full bg-white px-4 py-8">
@@ -128,7 +170,7 @@ const CronometrosLineas = () => {
                             className="bg-gray-50 rounded-xl shadow-md p-4 border border-gray-200 hover:shadow-lg transition-shadow"
                         >
                             <div className="text-center mb-2">
-                                <h3 className="text-xl font-bold text-gray-800">
+                                <h3 className="text-5xl font-bold text-gray-800">
                                     { linea.nombre }
                                 </h3>
                             </div>
